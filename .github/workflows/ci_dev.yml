@@ -1,0 +1,29 @@
+name: ci_dev.yml
+on:
+  push: 
+    branches:
+      - development
+  pull_request: 
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: SDK setup
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.0'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+          run: dotnet build --no-restore
+          
+      - name: Tests
+        run: dotnet test --no-build --verbosity normal
