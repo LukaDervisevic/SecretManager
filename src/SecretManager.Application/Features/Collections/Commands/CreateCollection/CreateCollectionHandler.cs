@@ -16,7 +16,7 @@ public class CreateCollectionHandler(IAppDbContext db, ILoggedInUserService curr
         if (vault is null)
             return Result.Failure<Guid>("Vault not found.");
 
-        var collection = Collection.Create(request.Name, request.OwnerId,request.VaultId,request.OrganizationId);
+        var collection = Collection.Create(request.Name, request.OwnerId,request.VaultId);
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.CollectionCreated,
             nameof(Collection), collection.Id, currentUser.IpAddress);
 

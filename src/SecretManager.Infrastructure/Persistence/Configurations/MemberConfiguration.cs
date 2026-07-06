@@ -15,11 +15,7 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.Role)
             .IsRequired()
             .HasConversion<string>();
-
-        builder.Property(m => m.Role)
-            .IsRequired()
-            .HasConversion<string>();
-
+        
         builder.HasOne(m => m.User)
             .WithMany()
             .HasForeignKey(m => m.UserId)

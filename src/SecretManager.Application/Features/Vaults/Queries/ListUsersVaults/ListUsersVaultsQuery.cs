@@ -3,6 +3,6 @@ using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Common.Models;
 using SecretManager.Domain.Entities;
 
-namespace SecretManager.Application.Features.Vaults.Queries.ListUsersVaultsQuery;
+namespace SecretManager.Application.Features.Vaults.Queries.ListUsersVaults;
 
 public record ListUsersVaultsQuery : IRequest<Result<List<VaultDto>>>;

@@ -30,6 +30,6 @@ public class LoginCommandHandler(
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
-        return Result.Success(new AuthResponse(accessToken,refreshToken,user.Id));
+        return Result.Success(new AuthResponse(accessToken,refreshToken,user.Id,user.MasterPasswordSalt));
     }
 }

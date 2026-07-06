@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Application.Common.Models;
-using SecretManager.Domain.Entities;
 
-namespace SecretManager.Application.Features.Organizations.Queries.ListUsersOrganizationsQuery;
+namespace SecretManager.Application.Features.Organizations.Queries.ListUsersOrganizations;
 
 public class ListUsersOrganizationsHandler(IAppDbContext db, ILoggedInUserService currentUser)
-: IRequestHandler<ListUsersOrganizationsCommand, Result<List<OrganizationDto>>>
+: IRequestHandler<ListUsersOrganizationsQuery, Result<List<OrganizationDto>>>
 {
-    public async Task<Result<List<OrganizationDto>>> Handle(ListUsersOrganizationsCommand request, CancellationToken cancellationToken)
+    public async Task<Result<List<OrganizationDto>>> Handle(ListUsersOrganizationsQuery request, CancellationToken cancellationToken)
     {
         var userId = currentUser.UserId;
 
@@ -46,7 +45,6 @@ public class ListUsersOrganizationsHandler(IAppDbContext db, ILoggedInUserServic
                         c.Id,
                         c.Name,
                         c.OwnerId,
-                        c.OrganizationId,
                         c.VaultId,
                         c.CreatedAt,
                         c.Secrets.Select(s => new SecretDto(

@@ -492,3 +492,5 @@ $RECYCLE.BIN/
 **/*.tfvars.tf
 **/*.tfvars.json
 
+src/SecretManager.API/appsettings.json
+

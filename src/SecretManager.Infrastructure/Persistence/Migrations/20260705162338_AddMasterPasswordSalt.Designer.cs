@@ -12,8 +12,8 @@ using SecretManager.Infrastructure.Persistence;
 namespace SecretManager.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260620084443_AddOrganizationAndMembers")]
-    partial class AddOrganizationAndMembers
+    [Migration("20260705162338_AddMasterPasswordSalt")]
+    partial class AddMasterPasswordSalt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,9 +77,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid?>("OrganizationId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
@@ -87,8 +84,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("OwnerId");
 
@@ -100,7 +95,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SecretManager.Domain.Entities.Member", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("JoinedAt")
@@ -214,6 +208,10 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("MasterPasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
 
@@ -270,11 +268,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SecretManager.Domain.Entities.Collection", b =>
                 {
-                    b.HasOne("SecretManager.Domain.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("SecretManager.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -286,8 +279,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
                         .HasForeignKey("VaultId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Organization");
 
                     b.Navigation("Vault");
                 });

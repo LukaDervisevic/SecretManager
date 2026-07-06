@@ -1,12 +1,21 @@
+using System.Text.Json.Serialization;
 using SecretManager.API.Middleware;
 using SecretManager.API.Services;
 using SecretManager.Application;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Infrastructure;
 
+DotNetEnv.Env.Load("../../.env");
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
@@ -40,6 +49,9 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
+
 app.MapControllers();
 
 app.Run();

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Application.Common.Models;
-using SecretManager.Domain.Entities;
 
 namespace SecretManager.Application.Features.Collections.Queries.ListCollectionsByVault;
 
@@ -28,7 +27,6 @@ public class ListCollectionsByVaultHandler(IAppDbContext db, ILoggedInUserServic
                 c.Id,
                 c.Name,
                 c.OwnerId,
-                c.OrganizationId,
                 c.VaultId,
                 c.CreatedAt,
                 c.Secrets.Select(s => new SecretDto(

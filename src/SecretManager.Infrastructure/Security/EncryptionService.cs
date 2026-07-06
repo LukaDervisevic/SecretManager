@@ -51,28 +51,42 @@ public class EncryptionService : IEncryptionService
         return Encoding.UTF8.GetString(plaintext);
     }
 
-    public (string PublicKey, string PrivateKey) GenerateKeyPair(string password)
+    public KeyPairResult GenerateKeyPair(string password)
     {
         var privateKeyBytes = new byte[32];
         RandomNumberGenerator.Fill(privateKeyBytes);
         var privateKey = Convert.ToBase64String(privateKeyBytes);
 
-        var salt = new byte[16];
-        RandomNumberGenerator.Fill(salt);
-        var passwordKey = Convert.ToBase64String(
+        var saltBytes = new byte[16];
+        RandomNumberGenerator.Fill(saltBytes);
+        var salt = Convert.ToBase64String(saltBytes);
+
+        var passwordDerivedKey = DeriveKeyFromPassword(password, saltBytes);
+
+        var encryptedPrivateKey = Encrypt(privateKey, passwordDerivedKey);
+
+        var publicKeyBytes = new byte[32];
+        RandomNumberGenerator.Fill(publicKeyBytes);
+        var publicKey = Convert.ToBase64String(publicKeyBytes);
+
+        return new KeyPairResult(publicKey, encryptedPrivateKey, salt, passwordDerivedKey);
+    }
+    
+    public string GenerateVaultKey(string password, string salt)
+    {
+        var saltBytes = Convert.FromBase64String(salt);
+        return DeriveKeyFromPassword(password, saltBytes);
+    }
+    
+    public string EncryptVaultKey(string vaultKey, string passwordDerivedKey) =>
+        Encrypt(vaultKey, passwordDerivedKey);
+    
+    private static string DeriveKeyFromPassword(string password, byte[] salt) =>
+        Convert.ToBase64String(
             Rfc2898DeriveBytes.Pbkdf2(
                 password,
                 salt,
                 iterations: 100_000,
                 HashAlgorithmName.SHA256,
                 outputLength: 32));
-
-        var encryptedPrivateKey = Encrypt(privateKey, passwordKey);
-
-        var publicKeyBytes = new byte[32];
-        RandomNumberGenerator.Fill(publicKeyBytes);
-        var publicKey = Convert.ToBase64String(publicKeyBytes);
-
-        return (publicKey, encryptedPrivateKey);
-    }
 }

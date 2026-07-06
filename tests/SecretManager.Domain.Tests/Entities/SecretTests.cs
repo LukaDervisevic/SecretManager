@@ -31,7 +31,7 @@ public class SecretTests
     {
         var collectionId = Guid.NewGuid();
 
-        var secret = Secret.Create("My Password", SecretType.Login, "ciphertext", Guid.NewGuid(), collectionId);
+        var secret = Secret.Create("My Password", SecretType.Login, "ciphertext", Guid.NewGuid(),Guid.NewGuid() ,collectionId);
 
         Assert.That(secret.CollectionId, Is.EqualTo(collectionId));
     }

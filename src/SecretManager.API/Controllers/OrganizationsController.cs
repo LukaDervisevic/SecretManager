@@ -6,7 +6,7 @@ using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Features.Organizations.Commands.AddOrganizationMember;
 using SecretManager.Application.Features.Organizations.Commands.CreateOrganization;
 using SecretManager.Application.Features.Organizations.Commands.RemoveOrganizationMember;
-using SecretManager.Application.Features.Organizations.Queries.ListUsersOrganizationsQuery;
+using SecretManager.Application.Features.Organizations.Queries.ListUsersOrganizations;
 
 
 namespace SecretManager.API.Controllers;
@@ -50,7 +50,7 @@ public class OrganizationsController(ISender sender) : ControllerBase
     [HttpGet("user")]
     public async Task<IActionResult> GetUsersOrganizations(CancellationToken ct)
     {
-        var result = await sender.Send(new ListUsersOrganizationsCommand(), ct);
+        var result = await sender.Send(new ListUsersOrganizationsQuery(), ct);
         return result.IsSuccess
             ? Ok(Response<List<OrganizationDto>>.Ok(result.Value!))
             : BadRequest(Response<List<OrganizationDto>>.Fail(result.Error!));

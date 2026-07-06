@@ -19,11 +19,11 @@ public class CollectionConfiguration : IEntityTypeConfiguration<Collection>
             .HasForeignKey(c => c.OwnerId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(c => c.Organization)
+        
+        builder.HasOne<Vault>()
             .WithMany()
-            .HasForeignKey(c => c.OrganizationId)
-            .IsRequired(false)
+            .HasForeignKey(c => c.VaultId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(c => c.Secrets)

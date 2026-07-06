@@ -41,7 +41,7 @@ public class SecretsController(ISender sender) : ControllerBase
     {
         var result = await sender.Send(command, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = result.Value }, Response<Guid>.Ok(result.Value!))
+            ? CreatedAtAction(nameof(GetById), new { id = result.Value }, Response<Guid>.Ok(result.Value))
             : BadRequest(Response<Guid>.Fail(result.Error!));
     }
 

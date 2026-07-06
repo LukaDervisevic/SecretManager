@@ -6,6 +6,6 @@ namespace SecretManager.Application.Features.Collections.Commands.CreateCollecti
 public record CreateCollectionCommand(
     string Name,
     Guid VaultId,
-    Guid OwnerId,
-    Guid? OrganizationId) :IRequest<Result<Guid>>;
+    Guid OwnerId
+    ) :IRequest<Result<Guid>>;
     

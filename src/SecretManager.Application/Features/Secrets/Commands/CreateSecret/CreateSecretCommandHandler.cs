@@ -12,6 +12,7 @@ public class CreateSecretCommandHandler(IAppDbContext db, ILoggedInUserService c
 {
     public async Task<Result<Guid>> Handle(CreateSecretCommand request, CancellationToken cancellationToken)
     {
+        
         var vault = await db.Vaults.FirstOrDefaultAsync(v => v.Id == request.VaultId, cancellationToken);
         if (vault is null)
             return Result.Failure<Guid>("Vault not found.");

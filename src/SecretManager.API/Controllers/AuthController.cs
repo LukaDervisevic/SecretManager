@@ -17,8 +17,8 @@ public class AuthController(ISender sender) : ControllerBase
     {
         var result =  await sender.Send(command, ct);
         return result.IsSuccess
-            ? Ok(Response<AuthResponse>.Ok(result.Value!))
-            : BadRequest(Response<AuthResponse>.Fail(result.Error!));
+            ? Ok(Response<Guid>.Ok(result.Value!))
+            : BadRequest(Response<Guid>.Fail(result.Error!));
     }
 
     [HttpPost("login")]

@@ -8,7 +8,7 @@ using SecretManager.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persistence.Migrations
+namespace SecretManager.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -74,9 +74,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid?>("OrganizationId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
@@ -84,8 +81,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("OwnerId");
 
@@ -210,6 +205,10 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("MasterPasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
 
@@ -266,11 +265,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
 
             modelBuilder.Entity("SecretManager.Domain.Entities.Collection", b =>
                 {
-                    b.HasOne("SecretManager.Domain.Entities.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("SecretManager.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -282,8 +276,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                         .HasForeignKey("VaultId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Organization");
 
                     b.Navigation("Vault");
                 });

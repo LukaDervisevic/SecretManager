@@ -7,6 +7,7 @@ public class User
     public string PasswordHash { get; private set; } = string.Empty;
     public string PublicKey { get; private set; } = string.Empty;
     public string EncryptedPrivateKey { get; private set; } = string.Empty;
+    public string MasterPasswordSalt { get; private set; } = string.Empty;
     public DateTime CreatedAt { get; private set; }
 
     public Guid? OrganizationId { get; private set; }
@@ -23,7 +24,7 @@ public class User
 
     private User() { }
 
-    public static User Create(string email, string passwordHash, string publicKey, string encPrivateKey)
+    public static User Create(string email, string passwordHash, string publicKey, string encPrivateKey, string masterPasswordSalt)
     {
         return new User
         {
@@ -32,6 +33,7 @@ public class User
             PasswordHash = passwordHash,
             PublicKey = publicKey,
             EncryptedPrivateKey = encPrivateKey,
+            MasterPasswordSalt = masterPasswordSalt,
             CreatedAt = DateTime.UtcNow
         };
     }

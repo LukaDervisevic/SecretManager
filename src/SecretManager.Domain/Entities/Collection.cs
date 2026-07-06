@@ -6,9 +6,7 @@ public class Collection
     public string Name { get; private set; } = string.Empty;
 
     public Guid OwnerId { get; private set; }            
-    public Guid? OrganizationId { get; private set; }
-    public Organization? Organization { get; private set; }
-
+    
     public Guid VaultId { get; private set; }
     public Vault Vault { get; private set; } = null!;
 
@@ -19,7 +17,7 @@ public class Collection
 
     private Collection() { }
 
-    public static Collection Create(string name, Guid ownerId, Guid vaultId, Guid? organizationId = null)
+    public static Collection Create(string name, Guid ownerId, Guid vaultId)
     {
         return new Collection
         {
@@ -27,7 +25,6 @@ public class Collection
             Name = name,
             OwnerId = ownerId,
             VaultId = vaultId,
-            OrganizationId = organizationId,
             CreatedAt = DateTime.UtcNow
         };
     }

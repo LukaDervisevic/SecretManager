@@ -6,7 +6,7 @@ using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Features.Vaults.Commands.CreateVault;
 using SecretManager.Application.Features.Vaults.Commands.DeleteVault;
 using SecretManager.Application.Features.Vaults.Queries.ListOrganizationsVaults;
-using SecretManager.Application.Features.Vaults.Queries.ListUsersVaultsQuery;
+using SecretManager.Application.Features.Vaults.Queries.ListUsersVaults;
 
 namespace SecretManager.API.Controllers;
 
@@ -20,7 +20,7 @@ public class VaultsController(ISender sender) : ControllerBase
     {
         var result = await sender.Send(command, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(Create), new { id = result.Value }, Response<Guid>.Ok(result.Value!))
+            ? CreatedAtAction(nameof(Create), new { id = result.Value }, Response<Guid>.Ok(result.Value))
             : BadRequest(Response<Guid>.Fail(result.Error!));
     }
 

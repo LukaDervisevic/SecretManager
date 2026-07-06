@@ -18,6 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PublicKey).IsRequired();
         builder.Property(u => u.EncryptedPrivateKey).IsRequired();
         builder.Property(u => u.CreatedAt).IsRequired();
-        
+        builder.Property(u => u.MasterPasswordSalt).IsRequired();
+
     }
 }

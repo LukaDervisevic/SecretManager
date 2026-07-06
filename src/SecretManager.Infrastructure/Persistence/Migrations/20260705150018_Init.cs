@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persistence.Migrations
+namespace SecretManager.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDomain : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +35,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
                     VaultId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -170,11 +169,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Collections_OrganizationId",
-                table: "Collections",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Collections_OwnerId",
                 table: "Collections",
                 column: "OwnerId");
@@ -237,14 +231,6 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                 column: "OwnerId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Collections_Organizations_OrganizationId",
-                table: "Collections",
-                column: "OrganizationId",
-                principalTable: "Organizations",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Collections_Users_OwnerId",
                 table: "Collections",
                 column: "OwnerId",
@@ -289,8 +275,8 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Users_Organizations_OrganizationId",
-                table: "Users");
+                name: "FK_Organizations_Users_OwnerId",
+                table: "Organizations");
 
             migrationBuilder.DropTable(
                 name: "AuditLogs");
@@ -308,10 +294,10 @@ namespace SecretManager.Infrastructure.src.SecretManager.Infrastructure.Persiste
                 name: "Vaults");
 
             migrationBuilder.DropTable(
-                name: "Organizations");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Organizations");
         }
     }
 }

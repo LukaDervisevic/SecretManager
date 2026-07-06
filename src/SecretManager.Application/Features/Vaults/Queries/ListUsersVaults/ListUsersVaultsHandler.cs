@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Application.Common.Models;
-using SecretManager.Domain.Entities;
 
-namespace SecretManager.Application.Features.Vaults.Queries.ListUsersVaultsQuery;
+namespace SecretManager.Application.Features.Vaults.Queries.ListUsersVaults;
 
 public class ListUsersVaultsHandler(IAppDbContext db, ILoggedInUserService currentUser)
 : IRequestHandler<ListUsersVaultsQuery,Result<List<VaultDto>>>
@@ -31,7 +30,6 @@ public class ListUsersVaultsHandler(IAppDbContext db, ILoggedInUserService curre
                     c.Id,
                     c.Name,
                     c.OwnerId,
-                    c.OrganizationId,
                     c.VaultId,
                     c.CreatedAt,
                     c.Secrets.Select(s => new SecretDto(
