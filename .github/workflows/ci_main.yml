@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{github.repository_owner}}/secret-manager-api
+  IMAGE_NAME: lukadervisevic/secret-manager-api
 
 jobs:
   build:
