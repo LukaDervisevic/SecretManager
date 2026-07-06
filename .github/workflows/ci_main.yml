@@ -11,6 +11,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: lukadervisevic/secret-manager-api
 
+permissions: 
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
