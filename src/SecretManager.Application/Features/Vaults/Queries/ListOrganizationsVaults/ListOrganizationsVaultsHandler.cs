@@ -6,7 +6,7 @@ using SecretManager.Application.Common.Models;
 
 namespace SecretManager.Application.Features.Vaults.Queries.ListOrganizationsVaults;
 
-public class ListOrganizationsVaultsHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class ListOrganizationsVaultsHandler(IAppDbContext db)
 : IRequestHandler<ListOrganizationsVaultsQuery, Result<List<VaultDto>>>
 {
     public async Task<Result<List<VaultDto>>> Handle(ListOrganizationsVaultsQuery request, CancellationToken cancellationToken)
