@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SecretManager.Application.Common.Interfaces;
+using SecretManager.Application.Common.Interfaces.Repositories;
 using SecretManager.Infrastructure.Persistence;
+using SecretManager.Infrastructure.Repositories.Implementation;
 using SecretManager.Infrastructure.Security;
 
 namespace SecretManager.Infrastructure;
@@ -27,6 +29,16 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IEncryptionService, EncryptionService>();
+
+        services.AddScoped<ICollectionRepository, CollectionRepository>();
+        services.AddScoped<ISecretRepository, SecretRepository>();
+        services.AddScoped<IVaultRepository,VaultRepository>();
+        services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        services.AddScoped<IAuditLogRepository,AuditLogRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IMemberRepository,MemberRepository>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

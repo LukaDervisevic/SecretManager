@@ -9,7 +9,7 @@ using SecretManager.Domain.Enums;
 namespace SecretManager.Application.Auth.Commands.Login;
 
 public class LoginCommandHandler(
-    IAppDbContext db,
+    IUnitOfWork uow,
     IPasswordHasher passwordHasher,
     ITokenService tokenService,
     ILoggedInUserService currentUser)
@@ -17,15 +17,14 @@ public class LoginCommandHandler(
 {
     public async Task<Result<AuthResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == request.Email.ToLowerInvariant().Trim(),
-            cancellationToken);
+        var user = await uow.UserRepository.FindByEmail(request.Email.ToLowerInvariant().Trim(),cancellationToken);
 
         if (user is null || !passwordHasher.Verify(request.Password, user.PasswordHash))
             return Result.Failure<AuthResponse>("Invalid email or password");
 
         var auditLog = AuditLog.Record(user.Id, AuditAction.UserLoggedIn, nameof(User), user.Id, currentUser.IpAddress);
-        db.AuditLogs.Add(auditLog);
-        await db.SaveChangesAsync(cancellationToken);
+        uow.AuditLogRepository.Add(auditLog);
+        await uow.SaveChangesAsync(cancellationToken);
 
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();

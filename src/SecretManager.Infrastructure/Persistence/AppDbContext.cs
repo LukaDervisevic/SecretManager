@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Secret> Secrets => Set<Secret>();
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<Member> Members => Set<Member>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

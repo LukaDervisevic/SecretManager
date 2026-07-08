@@ -1,8 +1,8 @@
 using MediatR;
+using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Common.Models;
-using SecretManager.Application.Features.Secrets.Queries.GetSecretById;
 
-namespace SecretManager.Application.Features.Secrets.Queries;
+namespace SecretManager.Application.Features.Secrets.Queries.ListVaultSecrets;
 
 public record ListSecretsByVaultQuery(Guid VaultId, int PageNumber = 1, int PageSize = 25)
-    : IRequest<Result<PaginatedList<SecretDto>>>;
+    : IRequest<Result<List<SecretDto>>>;

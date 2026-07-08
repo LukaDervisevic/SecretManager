@@ -9,7 +9,7 @@ public class CollectionConfiguration : IEntityTypeConfiguration<Collection>
     public void Configure(EntityTypeBuilder<Collection> builder)
     {
         builder.ToTable("Collections");
-        builder.HasKey(c => c.Id);
+        builder.HasKey(c => new {c.VaultId, c.Id});
 
         builder.Property(c => c.Name).IsRequired().HasMaxLength(200);
         builder.Property(c => c.CreatedAt).IsRequired();
@@ -28,7 +28,7 @@ public class CollectionConfiguration : IEntityTypeConfiguration<Collection>
 
         builder.HasMany(c => c.Secrets)
             .WithOne(s => s.Collection)
-            .HasForeignKey(s => s.CollectionId)
+            .HasForeignKey(s => new {s.VaultId, s.CollectionId})
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
     }

@@ -2,12 +2,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SecretManager.API.Models;
-using SecretManager.Application.Common.Models;
+using SecretManager.Application.Common.Dtos;
 using SecretManager.Application.Features.Secrets.Commands.CreateSecret;
 using SecretManager.Application.Features.Secrets.Commands.DeleteSecret;
 using SecretManager.Application.Features.Secrets.Commands.UpdateSecret;
-using SecretManager.Application.Features.Secrets.Queries;
-using SecretManager.Application.Features.Secrets.Queries.GetSecretById;
+using SecretManager.Application.Features.Secrets.Queries.ListVaultSecrets;
 
 namespace SecretManager.API.Controllers;
 
@@ -16,15 +15,7 @@ namespace SecretManager.API.Controllers;
 [Authorize]
 public class SecretsController(ISender sender) : ControllerBase
 {
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
-    {
-        var result = await sender.Send(new GetSecretById(id), ct);
-        return result.IsSuccess
-            ? Ok(Response<SecretDto>.Ok(result.Value!))
-            : BadRequest(Response<SecretDto>.Fail(result.Error!));
-    }
-
+    
     [HttpGet("vault/{vaultId:guid}")]
     public async Task<IActionResult> ListByVault(Guid vaultId,
         [FromQuery] int pageNumber = 1,
@@ -32,8 +23,8 @@ public class SecretsController(ISender sender) : ControllerBase
     {
         var result = await sender.Send(new ListSecretsByVaultQuery(vaultId, pageNumber, pageSize), ct);
         return result.IsSuccess
-            ? Ok(Response<PaginatedList<SecretDto>>.Ok(result.Value!))
-            : BadRequest(Response<PaginatedList<SecretDto>>.Fail(result.Error!));
+            ? Ok(Response<List<SecretDto>>.Ok(result.Value!))
+            : BadRequest(Response<List<SecretDto>>.Fail(result.Error!));
     }
 
     [HttpPost]
@@ -41,7 +32,7 @@ public class SecretsController(ISender sender) : ControllerBase
     {
         var result = await sender.Send(command, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = result.Value }, Response<Guid>.Ok(result.Value))
+            ? CreatedAtAction(nameof(Create), new { id = result.Value }, Response<Guid>.Ok(result.Value))
             : BadRequest(Response<Guid>.Fail(result.Error!));
     }
 

@@ -33,9 +33,9 @@ public class CollectionsController(ISender sender) : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Delete(Guid vaultId,Guid collectionId, CancellationToken ct)
     {
-        var result = await sender.Send(new DeleteCollectionCommand(id), ct);
+        var result = await sender.Send(new DeleteCollectionCommand(vaultId, collectionId), ct);
         return result.IsSuccess
             ? NoContent()
             : BadRequest(Response<object>.Fail(result.Error!));

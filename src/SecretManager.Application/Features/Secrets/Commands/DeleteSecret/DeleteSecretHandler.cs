@@ -7,14 +7,12 @@ using SecretManager.Domain.Enums;
 
 namespace SecretManager.Application.Features.Secrets.Commands.DeleteSecret;
 
-public class DeleteSecretHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class DeleteSecretHandler(IUnitOfWork uow, ILoggedInUserService currentUser)
 : IRequestHandler<DeleteSecretCommand,Result>
 {
     public async Task<Result> Handle(DeleteSecretCommand request, CancellationToken cancellationToken)
     {
-        var secret = await db.Secrets
-            .Include(s => s.Vault)
-            .FirstOrDefaultAsync(s => s.Id == request.SecretId, cancellationToken);
+        var secret = await uow.SecretRepository.GetSecret(request.SecretId,cancellationToken);
 
         if (secret is null)
             return Result.Failure("Secret not found");
@@ -25,13 +23,12 @@ public class DeleteSecretHandler(IAppDbContext db, ILoggedInUserService currentU
         if (secret.Vault.OwnerId != currentUser.UserId)
             return Result.Failure("You do not have access to this secret");
 
-        db.Secrets.Remove(secret);
-
+        uow.SecretRepository.Remove(secret);
+        
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.SecretDeleted, nameof(Secret), secret.Id,
             currentUser.IpAddress);
-        db.AuditLogs.Add(auditLog);
-
-        await db.SaveChangesAsync(cancellationToken);
+        uow.AuditLogRepository.Add(auditLog);
+        await uow.SaveChangesAsync(cancellationToken);
         return Result.Success(secret.Id);
     }
 }

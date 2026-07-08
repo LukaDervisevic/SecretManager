@@ -7,14 +7,12 @@ using SecretManager.Domain.Enums;
 
 namespace SecretManager.Application.Features.Organizations.Commands.RemoveOrganizationMember;
 
-public class RemoveOrganizationMemberCommandHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class RemoveOrganizationMemberCommandHandler(IUnitOfWork uow, ILoggedInUserService currentUser)
     : IRequestHandler<RemoveOrganizationMemberCommand, Result>
 {
     public async Task<Result> Handle(RemoveOrganizationMemberCommand request, CancellationToken cancellationToken)
     {
-        var organization = await db.Organizations
-            .Include(o => o.Members)
-            .FirstOrDefaultAsync(o => o.Id == request.OrganizationId, cancellationToken);
+        var organization = await uow.OrganizationRepository.GetOrganization(request.OrganizationId, cancellationToken);
 
         if (organization is null)
             return Result.Failure("Organization not found.");
@@ -24,13 +22,14 @@ public class RemoveOrganizationMemberCommandHandler(IAppDbContext db, ILoggedInU
 
         if (organization.OwnerId == request.UserId)
             return Result.Failure("Cannot remove the owner from the organization.");
-
-        organization.RemoveMember(request.UserId);
-
+        
+        var member = Member.Create(organization.Id, request.UserId, AccessPolicy.User);
+        uow.MemberRepository.Remove(member);
+        
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.OrganizationRemoveMember, nameof(Organization), organization.Id, currentUser.IpAddress);
-        db.AuditLogs.Add(auditLog);
+        uow.AuditLogRepository.Add(auditLog);
 
-        await db.SaveChangesAsync(cancellationToken);
+        await uow.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 }

@@ -9,15 +9,15 @@ using SecretManager.Domain.Enums;
 namespace SecretManager.Application.Auth.Commands.Register;
 
 public class RegisterCommandHandler(
-    IAppDbContext db,
+    IUnitOfWork uow,
     IPasswordHasher passwordHasher,
     IEncryptionService encryptionService
     ) : IRequestHandler<RegisterCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var exists = await db.Users.AnyAsync(u => u.Email == request.Email.ToLowerInvariant().Trim(), cancellationToken);
-        if (exists)
+        var exists = await uow.UserRepository.FindByEmail(request.Email.ToLowerInvariant().Trim(),cancellationToken); 
+        if (exists is not null)
             return Result.Failure<Guid>("A user with this email already exists.");
 
         var passwordHash = passwordHasher.Hash(request.Password);
@@ -41,14 +41,14 @@ public class RegisterCommandHandler(
 
         var auditLogRegister = AuditLog.Record(user.Id, AuditAction.UserRegistered, nameof(User), user.Id);
         var auditLogVaultRegister = AuditLog.Record(user.Id, AuditAction.VaultCreated, nameof(Vault), vault.Id);
-
-        db.Users.Add(user);
-        db.Vaults.Add(vault);
-        db.AuditLogs.Add(auditLogRegister);
-        db.AuditLogs.Add(auditLogVaultRegister);
-
-        await db.SaveChangesAsync(cancellationToken);
-
+        
+        uow.UserRepository.Add(user);
+        uow.VaultRepository.Add(vault);
+        uow.AuditLogRepository.Add(auditLogRegister);
+        uow.AuditLogRepository.Add(auditLogVaultRegister);
+        
+        await uow.SaveChangesAsync(cancellationToken);
+        
         return Result.Success(user.Id);
     }
 }

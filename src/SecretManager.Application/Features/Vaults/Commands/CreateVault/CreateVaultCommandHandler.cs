@@ -6,7 +6,7 @@ using SecretManager.Domain.Enums;
 
 namespace SecretManager.Application.Features.Vaults.Commands.CreateVault;
 
-public class CreateVaultCommandHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class CreateVaultCommandHandler(IUnitOfWork uow, ILoggedInUserService currentUser)
 : IRequestHandler<CreateVaultCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(CreateVaultCommand request, CancellationToken cancellationToken)
@@ -14,10 +14,11 @@ public class CreateVaultCommandHandler(IAppDbContext db, ILoggedInUserService cu
         var vault = Vault.Create(request.Name, currentUser.UserId, request.EncryptedKey, request.OrganizationId);
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.VaultCreated, nameof(Vault), vault.Id,
             currentUser.IpAddress);
-
-        db.Vaults.Add(vault);
-        db.AuditLogs.Add(auditLog);
-        await db.SaveChangesAsync(cancellationToken);
+        
+        uow.VaultRepository.Add(vault);
+        uow.AuditLogRepository.Add(auditLog);
+        
+        await uow.SaveChangesAsync(cancellationToken);
 
         return Result.Success(vault.Id);
     }

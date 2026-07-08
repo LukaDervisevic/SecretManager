@@ -6,7 +6,7 @@ using SecretManager.Domain.Enums;
 
 namespace SecretManager.Application.Features.Organizations.Commands.CreateOrganization;
 
-public class CreateOrganizationHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class CreateOrganizationHandler(IUnitOfWork uow, ILoggedInUserService currentUser)
 : IRequestHandler<CreateOrganizationCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
@@ -14,9 +14,11 @@ public class CreateOrganizationHandler(IAppDbContext db, ILoggedInUserService cu
         var organization = Organization.Create(request.Name, request.OwnerId);
         var auditLog = AuditLog.Record(currentUser.UserId,
             AuditAction.OrganizationCreated, nameof(Organization),organization.Id, currentUser.IpAddress);
-        db.AuditLogs.Add(auditLog);
-        db.Organizations.Add(organization);
-        await db.SaveChangesAsync(cancellationToken);
+        
+        uow.OrganizationRepository.Add(organization);
+        uow.AuditLogRepository.Add(auditLog);
+
+        await uow.SaveChangesAsync(cancellationToken);
         
         return Result.Success(organization.Id);
     }

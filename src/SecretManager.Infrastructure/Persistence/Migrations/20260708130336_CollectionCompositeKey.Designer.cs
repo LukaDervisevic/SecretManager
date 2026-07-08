@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SecretManager.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using SecretManager.Infrastructure.Persistence;
 namespace SecretManager.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708130336_CollectionCompositeKey")]
+    partial class CollectionCompositeKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +144,6 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SecretManager.Domain.Entities.Secret", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("CiphertextBlob")
@@ -177,7 +179,7 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("VaultId", "CollectionId");
+                    b.HasIndex("VaultId", "Id");
 
                     b.ToTable("Secrets", (string)null);
                 });
@@ -321,7 +323,7 @@ namespace SecretManager.Infrastructure.Persistence.Migrations
 
                     b.HasOne("SecretManager.Domain.Entities.Collection", "Collection")
                         .WithMany("Secrets")
-                        .HasForeignKey("VaultId", "CollectionId");
+                        .HasForeignKey("VaultId", "Id");
 
                     b.Navigation("Collection");
 

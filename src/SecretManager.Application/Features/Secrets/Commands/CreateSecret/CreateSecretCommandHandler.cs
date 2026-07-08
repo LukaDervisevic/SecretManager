@@ -7,15 +7,14 @@ using SecretManager.Domain.Enums;
 
 namespace SecretManager.Application.Features.Secrets.Commands.CreateSecret;
 
-public class CreateSecretCommandHandler(IAppDbContext db, ILoggedInUserService currentUser)
+public class CreateSecretCommandHandler(IUnitOfWork uow, ILoggedInUserService currentUser)
 : IRequestHandler<CreateSecretCommand,Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(CreateSecretCommand request, CancellationToken cancellationToken)
     {
-        
-        var vault = await db.Vaults.FirstOrDefaultAsync(v => v.Id == request.VaultId, cancellationToken);
+        var vault = await uow.VaultRepository.GetVault(request.VaultId, cancellationToken);
         if (vault is null)
-            return Result.Failure<Guid>("Vault not found.");
+            return Result.Failure<Guid>("Vault does not exist");
 
         if (vault.OwnerId != currentUser.UserId)
             return Result.Failure<Guid>("You do not have access to this vault.");
@@ -24,10 +23,10 @@ public class CreateSecretCommandHandler(IAppDbContext db, ILoggedInUserService c
             request.CollectionId);
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.SecretCreated, nameof(Secret), secret.Id,
             currentUser.IpAddress);
-
-        db.Secrets.Add(secret);
-        db.AuditLogs.Add(auditLog);
-        await db.SaveChangesAsync(cancellationToken);
+        
+        uow.SecretRepository.Add(secret);
+        uow.AuditLogRepository.Add(auditLog);
+        await uow.SaveChangesAsync(cancellationToken);
 
         return Result.Success(secret.Id);
     }
