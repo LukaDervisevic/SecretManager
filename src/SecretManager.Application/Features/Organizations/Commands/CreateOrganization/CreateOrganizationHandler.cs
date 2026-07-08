@@ -11,7 +11,7 @@ public class CreateOrganizationHandler(IUnitOfWork uow, ILoggedInUserService cur
 {
     public async Task<Result<Guid>> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
     {
-        var organization = Organization.Create(request.Name, request.OwnerId);
+        var organization = Organization.Create(request.Name, currentUser.UserId);
         var auditLog = AuditLog.Record(currentUser.UserId,
             AuditAction.OrganizationCreated, nameof(Organization),organization.Id, currentUser.IpAddress);
         

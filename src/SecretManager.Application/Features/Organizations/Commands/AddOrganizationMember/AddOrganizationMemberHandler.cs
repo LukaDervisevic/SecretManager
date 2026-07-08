@@ -25,7 +25,7 @@ public class AddOrganizationMemberHandler(IUnitOfWork uow, ILoggedInUserService 
         if (userToAdd is null)
             return Result.Failure("User not found.");
 
-        if (organization.Members.Any(m => m.Id == request.UserId))
+        if (organization.Members.Any(m => m.UserId == request.UserId))
             return Result.Failure("User is already a member of this organization");
 
         if (organization.OwnerId == request.UserId)

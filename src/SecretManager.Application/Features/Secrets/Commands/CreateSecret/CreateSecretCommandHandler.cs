@@ -16,18 +16,32 @@ public class CreateSecretCommandHandler(IUnitOfWork uow, ILoggedInUserService cu
         if (vault is null)
             return Result.Failure<Guid>("Vault does not exist");
 
-        if (vault.OwnerId != currentUser.UserId)
+        var hasAccess = await HasAccessToVault(vault, cancellationToken);
+        if (!hasAccess)
             return Result.Failure<Guid>("You do not have access to this vault.");
 
-        var secret = Secret.Create(request.Name, request.Type, request.Ciphertextblob,request.OwnerId,request.VaultId,
+        var secret = Secret.Create(request.Name, request.Type, request.Ciphertextblob, request.OwnerId, request.VaultId,
             request.CollectionId);
         var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.SecretCreated, nameof(Secret), secret.Id,
             currentUser.IpAddress);
-        
+
         uow.SecretRepository.Add(secret);
         uow.AuditLogRepository.Add(auditLog);
         await uow.SaveChangesAsync(cancellationToken);
 
         return Result.Success(secret.Id);
+    }
+    
+    private async Task<bool> HasAccessToVault(Vault vault, CancellationToken cancellationToken)
+    {
+        if (vault.OrganizationId is null)
+            return vault.OwnerId == currentUser.UserId;
+
+        var organization = await uow.OrganizationRepository.GetOrganization(vault.OrganizationId.Value, cancellationToken);
+        if (organization is null)
+            return false;
+
+        return organization.OwnerId == currentUser.UserId
+               || organization.Members.Any(m => m.UserId == currentUser.UserId);
     }
 }

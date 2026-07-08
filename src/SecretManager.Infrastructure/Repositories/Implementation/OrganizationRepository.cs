@@ -21,6 +21,9 @@ public class OrganizationRepository(AppDbContext db): IOrganizationRepository
             .OrderBy(o => o.Name)
             .ToListAsync(cancellationToken);
 
-    public Task<Organization?> GetOrganization(Guid id,CancellationToken cancellationToken = default) =>
-        db.Organizations.FirstOrDefaultAsync(o => o.Id == id,cancellationToken);
+    public Task<Organization?> GetOrganization(Guid id, CancellationToken cancellationToken = default) =>
+        db.Organizations
+            .Include(o => o.Members)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+
 }

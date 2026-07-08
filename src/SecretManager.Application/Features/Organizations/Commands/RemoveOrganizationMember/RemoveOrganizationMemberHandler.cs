@@ -13,20 +13,18 @@ public class RemoveOrganizationMemberCommandHandler(IUnitOfWork uow, ILoggedInUs
     public async Task<Result> Handle(RemoveOrganizationMemberCommand request, CancellationToken cancellationToken)
     {
         var organization = await uow.OrganizationRepository.GetOrganization(request.OrganizationId, cancellationToken);
-
         if (organization is null)
             return Result.Failure("Organization not found.");
 
         if (organization.OwnerId != currentUser.UserId)
             return Result.Failure("Only the organization owner can remove members.");
 
-        if (organization.OwnerId == request.UserId)
-            return Result.Failure("Cannot remove the owner from the organization.");
-        
-        var member = Member.Create(organization.Id, request.UserId, AccessPolicy.User);
-        uow.MemberRepository.Remove(member);
-        
-        var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.OrganizationRemoveMember, nameof(Organization), organization.Id, currentUser.IpAddress);
+        var member = organization.Members.FirstOrDefault(m => m.UserId == request.UserId);
+        if (member is null)
+            return Result.Failure("Member not found in this organization.");
+
+        uow.MemberRepository.Remove(member); 
+        var auditLog = AuditLog.Record(currentUser.UserId, AuditAction.OrganizationRemoveMember, nameof(Member), member.Id, currentUser.IpAddress);
         uow.AuditLogRepository.Add(auditLog);
 
         await uow.SaveChangesAsync(cancellationToken);

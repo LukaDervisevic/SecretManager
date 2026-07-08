@@ -21,7 +21,13 @@ public class VaultRepository(AppDbContext db) : IVaultRepository
             .Include(v => v.Secrets)
             .Include(v => v.Collections)
             .ThenInclude(c => c.Secrets)
-            .Where(v => v.OwnerId == userId)
+            .Where(v => v.OwnerId == userId ||
+                        (v.OrganizationId != null &&
+                         db.Organizations.Any(o =>
+                             o.Id == v.OrganizationId &&
+                             (o.OwnerId == userId || o.Members.Any(m => m.UserId == userId))
+                         )
+                        ))
             .OrderBy(v => v.Name)
             .ToListAsync(cancellationToken);
 

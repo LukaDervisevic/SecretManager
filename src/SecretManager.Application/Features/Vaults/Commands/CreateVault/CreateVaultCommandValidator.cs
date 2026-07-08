@@ -7,7 +7,7 @@ public class CreateVaultCommandValidator : AbstractValidator<CreateVaultCommand>
     public CreateVaultCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.EncryptedKey).NotEmpty();
+        RuleFor(x => x.MasterKey).NotEmpty();
         RuleFor(x => x.OwnerId).NotEmpty();
     }    
 }
