@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Application.Common.Models;
 using SecretManager.Domain.Entities;

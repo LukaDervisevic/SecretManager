@@ -15,4 +15,5 @@ public class UserRepository(AppDbContext db): IUserRepository
 
     public Task<User?> FindByIdAsync(Guid userId, CancellationToken cancellationToken) =>
         db.Users.FirstOrDefaultAsync(u => u.Id == userId,cancellationToken);
+
 }

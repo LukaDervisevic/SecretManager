@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SecretManager.API.Models;
 using SecretManager.Application.Auth.Commands.Login;
+using SecretManager.Application.Auth.Commands.RefreshToken;
 using SecretManager.Application.Auth.Commands.Register;
 
 namespace SecretManager.API.Controllers;
@@ -23,6 +24,15 @@ public class AuthController(ISender sender) : ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginCommand command, CancellationToken ct)
+    {
+        var result = await sender.Send(command, ct);
+        return result.IsSuccess
+            ? Ok(Response<AuthResponse>.Ok(result.Value!))
+            : BadRequest(Response<AuthResponse>.Fail(result.Error!));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenCommand command, CancellationToken ct)
     {
         var result = await sender.Send(command, ct);
         return result.IsSuccess

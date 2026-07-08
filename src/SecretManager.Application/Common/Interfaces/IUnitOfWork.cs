@@ -11,6 +11,7 @@ public interface IUnitOfWork
     IOrganizationRepository OrganizationRepository { get; }
     IAuditLogRepository AuditLogRepository { get; }
     IUserRepository UserRepository { get; }
+    IRefreshTokenRepository RefreshTokenRepository { get; }
     
     Task SaveChangesAsync(CancellationToken ct = default);
 }

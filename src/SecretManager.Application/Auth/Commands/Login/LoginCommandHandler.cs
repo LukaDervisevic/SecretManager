@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using SecretManager.Application.Auth.Commands.Register;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Application.Common.Models;
@@ -28,6 +27,9 @@ public class LoginCommandHandler(
 
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
+        var refreshTokenEntity = Domain.Entities.RefreshToken.Create(user.Id, refreshToken);
+        uow.RefreshTokenRepository.Add(refreshTokenEntity);
+        await uow.SaveChangesAsync(cancellationToken);
 
         return Result.Success(new AuthResponse(accessToken,refreshToken,user.Id,user.MasterPasswordSalt));
     }

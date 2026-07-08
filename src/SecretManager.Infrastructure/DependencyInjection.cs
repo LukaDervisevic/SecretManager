@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IAuditLogRepository,AuditLogRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMemberRepository,MemberRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

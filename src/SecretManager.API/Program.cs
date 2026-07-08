@@ -1,9 +1,12 @@
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.PostgreSql;
 using SecretManager.API.Middleware;
 using SecretManager.API.Services;
 using SecretManager.Application;
 using SecretManager.Application.Common.Interfaces;
 using SecretManager.Infrastructure;
+using SecretManager.Infrastructure.Jobs;
 
 DotNetEnv.Env.Load("../../.env");
 
@@ -25,6 +28,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<ILoggedInUserService, CurrentUserService>();
 
+builder.Services.AddHangfire(config => config
+    .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -43,6 +51,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHangfireDashboard("/hangfire");
+RecurringJob.AddOrUpdate<AuditLogCleanupJob>(
+    "cleanup-old-audit-logs",
+    job => job.Execute(),
+    Cron.Daily);
+
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();

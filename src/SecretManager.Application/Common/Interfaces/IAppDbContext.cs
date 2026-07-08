@@ -11,6 +11,7 @@ public interface IAppDbContext
     DbSet<Collection> Collections { get; }
     DbSet<Organization> Organizations { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

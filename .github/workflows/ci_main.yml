@@ -113,9 +113,6 @@ jobs:
             sleep 3
           done
 
-          echo "Smoke test failed — dumping final logs:"
-          docker
-          
       - name: Pushing to Github registry 
         run: |
           docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest

@@ -24,7 +24,7 @@ public class SecretRepository(AppDbContext db) :ISecretRepository
 
     public Task<List<Secret>> GetVaultSecrets(Guid vaultId,CancellationToken cancellationToken) => 
         db.Secrets
-            .Where(s => s.VaultId == vaultId)
+            .Where(s => s.VaultId == vaultId && s.CollectionId == null)
             .OrderBy(s => s.Name)
             .ToListAsync(cancellationToken);
 
