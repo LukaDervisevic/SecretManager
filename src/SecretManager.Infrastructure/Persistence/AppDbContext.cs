@@ -16,6 +16,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Member> Members => Set<Member>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Proizvod> Proizvodi => Set<Proizvod>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

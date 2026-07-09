@@ -13,7 +13,8 @@ public class UnitOfWork(
     IOrganizationRepository organizationRepository,
     IAuditLogRepository auditLogRepository,
     IUserRepository userRepository,
-    IRefreshTokenRepository refreshTokenRepository) :IUnitOfWork
+    IRefreshTokenRepository refreshTokenRepository,
+    IProizvodRepository proizvodRepository) :IUnitOfWork
 {
     public IVaultRepository VaultRepository => vaultRepository;
     public ISecretRepository SecretRepository => secretRepository;
@@ -23,6 +24,7 @@ public class UnitOfWork(
     public IAuditLogRepository AuditLogRepository => auditLogRepository;
     public IUserRepository UserRepository => userRepository;
     public IRefreshTokenRepository RefreshTokenRepository => refreshTokenRepository;
+    public IProizvodRepository ProizvodRepository => proizvodRepository;
     
     
     public Task SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
